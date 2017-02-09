@@ -44,7 +44,10 @@ void sine_serial(float *input, float *output)
 
 
 // kernel function (CUDA device)
-// TODO: Implement your graphics kernel here. See assignment instructions for method information
+// TODO: Implement your graphics kernel here. See assignment instructions for method information  
+
+
+
 
 // BEGIN: timing and error checking routines (do not modify)
 
