@@ -141,6 +141,37 @@ int main (int argc, char **argv)
   //TODO: Prepare and run your kernel, make sure to copy your results back into h_gpu_result and display your timing results
   float *h_gpu_result = (float*)malloc(N*sizeof(float));
 
+
+  //gpu device in and out pointers
+  float *d_in;
+  float *d_out;
+
+  //GPU Memory Allocation
+  long long GPU_Mem_Alloc_start_time = start_timer();
+  cudaMalloc((void **) &d_in, (N*sizeof(float)));
+  cudaMalloc((void **) &d_out, (N*sizeof(float)));
+  long long GPU_Mem_Alloc_time = stop_timer(GPU_Mem_Alloc_start_time, "\nGPU Memory Allocation: ");
+
+  //GPU Memory Copy to Device
+  long long GPU_Mem_copy_start_time = start_timer();
+  cudaMemcpy(d_in, h_input, (N*sizeof(float)), cudaMemcpyHostToDevice);
+  long long GPU_Memcpy_time = stop_timer(GPU_Mem_copy_start_time, "\nGPU Memory Copy to Device: ");
+
+
+  //GPU Kernel Run (1024 maximum threads 12345678/1024 rounded blocks =12057)
+
+  long long GPU_execute_start_time = start_timer();
+  sine_parallel<<<12057, 1024>>>(d_in, d_out);
+  long long GPU_execute_time = stop_timer(GPU_execute_start_time, "\nGPU Kernel Run Time");
+  
+
+  //GPU Memory Copy to Host
+  long long GPU_host_start_time = start_timer();
+  cudaMemcpy(h_gpu_result,d_out, N*sizeof(float), cudaMemcpyDeviceToHost);
+  long long GPU_host_time = stop_timer(GPU_host_start_time, "\nGPU Copy Memory to Host Time");
+  
+
+
   // Checking to make sure the CPU and GPU results match - Do not modify
   int errorCount = 0;
   for (i=0; i<N; i++)
