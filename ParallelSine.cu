@@ -47,6 +47,29 @@ void sine_serial(float *input, float *output)
 // TODO: Implement your graphics kernel here. See assignment instructions for method information  
 
 
+//implement kernel
+__global__ void sine_parallel(float *input, float *output)
+{
+      //calculate array index
+      int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+      //perform taylor expansion
+
+      float value = input[idx];
+      float numer = input[idx] * input[idx] * input[idx];
+      int denom = 6; // 3!
+      int sign = -1;
+      for (int j=1; j<=TERMS;j++)
+      {
+         value += sign * numer / denom;
+         numer *= input[idx] * input[idx];
+         denom *= (2*j+2) * (2*j+3);
+         sign *= -1;
+      }
+ 
+      output[idx] = value;
+
+}
 
 
 // BEGIN: timing and error checking routines (do not modify)
